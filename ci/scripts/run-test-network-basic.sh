@@ -3,7 +3,7 @@
 set -euo pipefail
 
 CHAINCODE_LANGUAGE='go'
-CHAINCODE_PATH='/home/runner/work/OSC-Chaincode/chaincode/'
+CHAINCODE_PATH='/home/runner/work/OSC-Chaincode/OSC-Chaincode/chaincode'
 
 function print() {
 	GREEN='\033[0;32m'
