@@ -22,7 +22,7 @@ function createNetwork() {
 
 function deployChaincode() {
   print "Deploying ${CHAINCODE_NAME} chaincode"
-  ./network.sh deployCC -ccn "${CHAINCODE_NAME}" -ccp "${CHAINCODE_PATH}/chaincode-${CHAINCODE_LANGUAGE}" -ccv 1 -ccs 1 -ccl "${CHAINCODE_LANGUAGE}"
+  ./network.sh deployCC -ccn "${CHAINCODE_NAME}" -ccp "${CHAINCODE_PATH}" -ccv 1 -ccs 1 -ccl "${CHAINCODE_LANGUAGE}"
 }
 
 function stopNetwork() {
