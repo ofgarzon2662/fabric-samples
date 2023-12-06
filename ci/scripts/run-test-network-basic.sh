@@ -14,7 +14,7 @@ function print() {
 
 function createNetwork() {
   print "Creating 3 Org network"
-  ./network.sh up createChannel -ca -s couchdb
+  ./network.sh up createChannel #-ca -s couchdb
   #cd addOrg3
   #./addOrg3.sh up -ca -s couchdb
   #cd ..
