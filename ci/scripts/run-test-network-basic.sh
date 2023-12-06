@@ -15,9 +15,9 @@ function print() {
 function createNetwork() {
   print "Creating 3 Org network"
   ./network.sh up createChannel -ca -s couchdb
-  cd addOrg3
-  ./addOrg3.sh up -ca -s couchdb
-  cd ..
+  #cd addOrg3
+  #./addOrg3.sh up -ca -s couchdb
+  #cd ..
 }
 
 function deployChaincode() {
@@ -42,12 +42,12 @@ createNetwork
 print "Initializing Go application"
 export CHAINCODE_NAME=basic_${CHAINCODE_LANGUAGE}_for_go_app
 deployChaincode
-pushd '/home/runner/work/OSC-Chaincode/OSC-Chaincode/'
-print "Executing main.go"
-export CORE_CHAINCODE_ID_NAME='basic_go_for_go_app:1.0'
-export CORE_PEER_TLS_ENABLED=true
-go run main.go -peer.address=localhost:7052
-popd
+#pushd '/home/runner/work/OSC-Chaincode/OSC-Chaincode/'
+#print "Executing main.go"
+#export CORE_CHAINCODE_ID_NAME='basic_go_for_go_app:1.0'
+#export CORE_PEER_TLS_ENABLED=true
+#go run main.go -peer.address=localhost:7052
+#popd
 
 stopNetwork
 
