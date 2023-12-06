@@ -44,6 +44,7 @@ export CHAINCODE_NAME=basic_${CHAINCODE_LANGUAGE}_for_go_app
 deployChaincode
 pushd '/home/runner/work/OSC-Chaincode/OSC-Chaincode/'
 print "Executing main.go"
+export CORE_CHAINCODE_ID_NAME='basic_go_for_go_app:1.0'
 go run main.go
 popd
 
