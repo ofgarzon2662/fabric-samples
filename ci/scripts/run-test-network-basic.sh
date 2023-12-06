@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-CHAINCODE_LANGUAGE=${CHAINCODE_LANGUAGE:-go}
-CHAINCODE_PATH=${CHAINCODE_PATH:-../asset-transfer-basic}
+CHAINCODE_LANGUAGE='go'
+CHAINCODE_PATH='/home/runner/work/OSC-Chaincode/chaincode/'
 
 function print() {
 	GREEN='\033[0;32m'
@@ -46,38 +46,6 @@ pushd ../asset-transfer-basic/application-go
 print "Executing AssetTransfer.go"
 go run .
 popd
-
-# Run Java application
-print "Initializing Java application"
-export CHAINCODE_NAME=basic_${CHAINCODE_LANGUAGE}_for_java_app
-deployChaincode
-pushd ../asset-transfer-basic/application-java
-print "Executing Gradle Run"
-gradle run
-popd
-
-# Run Javascript application
-print "Initializing Javascript application"
-export CHAINCODE_NAME=basic_${CHAINCODE_LANGUAGE}_for_javascript_app
-deployChaincode
-pushd ../asset-transfer-basic/application-javascript
-npm install
-print "Executing app.js"
-node app.js
-popd
-
-# Run typescript application
-print "Initializing Typescript application"
-export CHAINCODE_NAME=basic_${CHAINCODE_LANGUAGE}_for_typescript_app
-deployChaincode
-pushd ../asset-transfer-basic/application-typescript
-npm install
-print "Building app.ts"
-npm run build
-print "Running the output app"
-node dist/app.js
-popd
-
 
 stopNetwork
 
