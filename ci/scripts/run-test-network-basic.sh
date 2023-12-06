@@ -42,9 +42,9 @@ createNetwork
 print "Initializing Go application"
 export CHAINCODE_NAME=basic_${CHAINCODE_LANGUAGE}_for_go_app
 deployChaincode
-pushd ../asset-transfer-basic/application-go
-print "Executing AssetTransfer.go"
-go run .
+pushd '/home/runner/work/OSC-Chaincode/OSC-Chaincode/'
+print "Executing main.go"
+go run main.go
 popd
 
 stopNetwork
