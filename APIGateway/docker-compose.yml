@@ -1,0 +1,28 @@
+version: '3'
+services:
+  users:
+    build: users
+    ports:
+      - "3000:3000"
+    environment:
+      DB_NAME: monitor_users
+      DB_HOST: users_db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    depends_on:
+      users_db:
+        condition: service_healthy
+  users_db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: monitor_users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
