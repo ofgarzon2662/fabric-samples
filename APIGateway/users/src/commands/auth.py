@@ -25,7 +25,9 @@ class Auth(BaseCommand, ABC):
         hashed_password = hashlib.md5(salted_password.encode('utf-8')).hexdigest()
         if user.password != hashed_password:
             raise NotFoundException
-        user.token = str(uuid.uuid4())
+        # Generate token with role information
+        token_uuid = str(uuid.uuid4())
+        user.token = f"{token_uuid}|{user.role}"
         user.expireAt = datetime.now() + timedelta(hours=1)
         db.session.add(user)
         db.session.commit()

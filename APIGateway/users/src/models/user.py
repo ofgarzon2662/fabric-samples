@@ -1,3 +1,4 @@
+from enum import Enum
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from sqlalchemy import String, DateTime
 
@@ -16,6 +17,7 @@ class User(db.Model, Model):
     token = db.Column(String(36))
     status = db.Column(String(15))
     expireAt = db.Column(DateTime)
+    role = db.Column(Enum('Admin', 'User', name='user_roles'), default='User')
 
     def __init__(self, username=None, email=None, phoneNumber=None, dni=None, fullName=None, password=None, salt=None,
                  token=None, status=None, expireAt=None):
