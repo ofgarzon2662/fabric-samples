@@ -34,6 +34,9 @@ function init_storage_volumes() {
   elif [ "${CLUSTER_RUNTIME}" == "k3s" ]; then
     export STORAGE_CLASS="local-path"
 
+  elif [ "${CLUSTER_RUNTIME}" == "gke" ]; then
+    export STORAGE_CLASS="standard"
+
   else
     echo "Unknown CLUSTER_RUNTIME ${CLUSTER_RUNTIME}"
     exit 1
