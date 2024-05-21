@@ -61,7 +61,4 @@ fi
 
 # Add more invocations and checks as needed
 
-
-# ./network.sh down
-
-cd $CC_SRC_PATH
+./network.sh down
