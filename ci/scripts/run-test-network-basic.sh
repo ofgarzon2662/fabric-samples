@@ -49,6 +49,6 @@ deployChaincode
 #go run main.go -peer.address=localhost:7052
 #popd
 
-stopNetwork
+#stopNetwork
 
 { set +x; } 2>/dev/null
