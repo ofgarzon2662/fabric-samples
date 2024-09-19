@@ -1,21 +1,28 @@
-import { IsDate, IsNotEmpty, IsString, Validate } from 'class-validator';
+import { IsNotEmpty, IsString, Validate, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsPastDateConstraint } from '../shared/validators/is-past-date.validators';
 
-export class SocioDto {
+
+export class AssetDto {
+
+  @IsNumber()
+  @IsNotEmpty()
+  AppraisedValue: number;
 
   @IsString()
   @IsNotEmpty()
-  nombre: string;
+  color: string;
 
   @IsString()
   @IsNotEmpty()
-  email: string;
+  owner: string;
 
-  @IsDate()
+  @IsNumber()
   @IsNotEmpty()
-  @Type(() => Date)
-  @Validate(IsPastDateConstraint)
-  fechaNacimiento: Date;
+  size: number;
+
+  @IsString()
+  @IsNotEmpty()
+  docType: string;
+
 
 }

@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { SocioService } from './asset.service';
+import { AssetService } from './asset.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SocioEntity } from './asset.entity';
-import { SocioController } from './asset.controller';
+import { AssetEntity } from './asset.entity';
+import { AssetController } from './asset.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SocioEntity])],
-  providers: [SocioService],
-  controllers: [SocioController]
+  imports: [TypeOrmModule.forFeature([AssetEntity])],
+  providers: [AssetService],
+  controllers: [AssetController]
 })
 
 export class SocioModule {}

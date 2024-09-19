@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class SocioEntity {
+export class AssetEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -9,9 +9,15 @@ export class SocioEntity {
     AppraisedValue: number;
 
     @Column()
-    email: string;
+    color: string;
 
     @Column()
-    fechaNacimiento: Date;
+    owner: string;
+
+    @Column('float')
+    size: number;
+
+    @Column()
+    docType: string;
 
     }

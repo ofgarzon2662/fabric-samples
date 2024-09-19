@@ -10,16 +10,16 @@ import {
     UseInterceptors,
   } from '@nestjs/common';
 
-import { SocioService } from './asset.service';
-import { SocioEntity } from './asset.entity';
+import { AssetService } from './asset.service';
+import { AssetEntity } from './asset.entity';
 import { plainToInstance } from 'class-transformer';
-import { SocioDto } from './asset.dto';
+import { AssetDto } from './asset.dto';
 import { BusinessErrorsInterceptor } from '../shared/interceptors/business-errors.interceptors';
 
 @Controller('members')
 @UseInterceptors(BusinessErrorsInterceptor)
 
-export class SocioController {
+export class AssetController {
   constructor(private readonly socioService: SocioService) {}
 
     // Obtener todos los socios
