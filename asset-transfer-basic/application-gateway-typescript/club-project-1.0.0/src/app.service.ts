@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import * as grpc from '@grpc/grpc-js';
-import { connect, Contract, Identity, Signer, signers } from '@hyperledger/fabric-gateway';
+import { connect, Identity, Signer, signers } from '@hyperledger/fabric-gateway';
 import * as crypto from 'crypto';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -13,6 +13,10 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
 @Injectable()
 export class AppService implements OnModuleInit, OnModuleDestroy {
+
+    getHello(): string {
+        return 'Hello World!';
+      }
 
     private  channelName: string;
     private  chaincodeName: string;
@@ -34,7 +38,9 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
         this.mspId = this.envOrDefault('MSP_ID', 'Org1MSP');
 
         // Path to crypto materials.
-        this.cryptoPath = this.envOrDefault('CRYPTO_PATH', path.resolve(__dirname, '..', '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com'));
+        this.cryptoPath = this.envOrDefault('CRYPTO_PATH', path.resolve(__dirname, '..', '..', '..', '..', 'test-network', 'organizations', 'peerOrganizations', 'org1.example.com'));
+
+        console.log(`cryptoPath: ${this.cryptoPath}`);
 
         // Path to user private key directory.
         this.keyDirectoryPath = this.envOrDefault('KEY_DIRECTORY_PATH', path.resolve(this.cryptoPath, 'users', 'User1@org1.example.com', 'msp', 'keystore'));
@@ -60,6 +66,7 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
 
     private async  newGrpcConnection(): Promise<grpc.Client> {
 
+        console.log(`tlsCertPath: ${this.tlsCertPath}`);
         const tlsRootCert = await fs.readFile(this.tlsCertPath);
         const tlsCredentials = grpc.credentials.createSsl(tlsRootCert);
         return new grpc.Client(this.peerEndpoint, tlsCredentials, {
@@ -91,6 +98,7 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
     }
 
     async onModuleInit(): Promise<void> {
+        this.loadEnvironmentVariables();
         const client = await this.newGrpcConnection();
         this.gateway = connect({
             client,
@@ -118,6 +126,9 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
 
             // Get the smart contract from the network.
             this.contract = this.network.getContract(this.chaincodeName);
+
+            // Initialize the ledger
+            await this.contract.submitTransaction('InitLedger');
 
             } finally {
             this.gateway.close();
