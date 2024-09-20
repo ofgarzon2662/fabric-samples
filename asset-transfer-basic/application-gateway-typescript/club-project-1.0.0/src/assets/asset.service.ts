@@ -35,6 +35,8 @@ export class AssetService {
     // Get All Assets
     async getAllAssets(): Promise<AssetEntity[]> {
 
+        this.contract = this.appService.getContract();
+
         // Evaluate tx
         const resultBytes = await this.contract.evaluateTransaction('GetAllAssets');
 

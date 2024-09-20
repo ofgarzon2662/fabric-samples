@@ -3,16 +3,16 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import * as grpc from '@grpc/grpc-js';
-import { connect, Identity, Signer, signers } from '@hyperledger/fabric-gateway';
-import * as crypto from 'crypto';
-import { promises as fs } from 'fs';
-import * as path from 'path';
-import { TextDecoder } from 'util';
+const grpc = require('@grpc/grpc-js');
+const { connect, signers } = require('@hyperledger/fabric-gateway');
+const crypto = require('node:crypto');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const { TextDecoder } = require('node:util');
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
 @Injectable()
-export class AppService implements OnModuleInit, OnModuleDestroy {
+export class AppService implements OnModuleInit {
 
     getHello(): string {
         return 'Hello World!';
@@ -65,7 +65,7 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
 
 
 
-    private async  newGrpcConnection(): Promise<grpc.Client> {
+    private async  newGrpcConnection(): Promise<any> {
 
         console.log(`tlsCertPath: ${this.tlsCertPath}`);
         const tlsRootCert = await fs.readFile(this.tlsCertPath);
@@ -75,7 +75,7 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
         });
     }
 
-    private async newIdentity(): Promise<Identity> {
+    private async newIdentity() {
         const certPath = await this.getFirstDirFileName(this.certDirectoryPath);
         const credentials = await fs.readFile(certPath);
         const mspId = this.mspId;
@@ -91,7 +91,7 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
         return path.join(dirPath, file);
     }
 
-    private async newSigner(): Promise<Signer> {
+    private async newSigner() {
         const keyPath = await this.getFirstDirFileName(this.keyDirectoryPath);
         const privateKeyPem = await fs.readFile(keyPath);
         const privateKey = crypto.createPrivateKey(privateKeyPem);
@@ -121,22 +121,27 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
         console.log(`peerEndpoint:      ${this.peerEndpoint}`);
         console.log(`peerHostAlias:     ${this.peerHostAlias}`);
 
+
         this.network = this.gateway.getNetwork(this.channelName);
+        console.log('Client initialized', client);
+        console.log('gateway', this.gateway);
+        console.log('Network initialized', this.network);
 
         // Get the smart contract from the network.
         this.contract = this.network.getContract(this.chaincodeName);
+        console.log('Contract initialized FIRST', this.network.getContract(this.chaincodeName));
         this.isInitialized = true;
         console.log('Gateway connection successful');
 
         }
 
 
-    async onModuleDestroy(): Promise<void> {
-        if (this.gateway) {
-            this.gateway.close();
-            console.log('Gateway connection closed');
-        }
-    }
+    // async onModuleDestroy(): Promise<void> {
+    //     if (this.gateway) {
+    //         this.gateway.close();
+    //         console.log('Gateway connection closed');
+    //     }
+    // }
 
     // Métodos públicos para acceder a las instancias de network y contract
     public async getNetwork(): Promise<any> {
@@ -149,6 +154,9 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
             // Espera hasta que isInitialized sea true
             await this.waitForInitialization();
         }
+
+        console.log('Contract initialized', this.contract);
+        console.log('Returning contract instance');
         return this.network.getContract(this.chaincodeName);
     }
 
