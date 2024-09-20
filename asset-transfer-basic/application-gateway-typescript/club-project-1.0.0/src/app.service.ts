@@ -18,6 +18,7 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
         return 'Hello World!';
       }
 
+    private isInitialized = false;
     private  channelName: string;
     private  chaincodeName: string;
     private  mspId: string;
@@ -120,21 +121,15 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
         console.log(`peerEndpoint:      ${this.peerEndpoint}`);
         console.log(`peerHostAlias:     ${this.peerHostAlias}`);
 
-        try {
-            // Get a network instance representing the channel where the smart contract is deployed.
-            this.network = this.gateway.getNetwork(this.channelName);
+        this.network = this.gateway.getNetwork(this.channelName);
 
-            // Get the smart contract from the network.
-            this.contract = this.network.getContract(this.chaincodeName);
+        // Get the smart contract from the network.
+        this.contract = this.network.getContract(this.chaincodeName);
+        this.isInitialized = true;
+        console.log('Gateway connection successful');
 
-            // Initialize the ledger
-            await this.contract.submitTransaction('InitLedger');
-
-            } finally {
-            this.gateway.close();
-            client.close();
         }
-    }
+
 
     async onModuleDestroy(): Promise<void> {
         if (this.gateway) {
@@ -144,11 +139,27 @@ export class AppService implements OnModuleInit, OnModuleDestroy {
     }
 
     // Métodos públicos para acceder a las instancias de network y contract
-    public getNetwork(): any {
+    public async getNetwork(): Promise<any> {
         return this.network;
     }
 
-    public getContract(): any {
-        return this.contract;
+    public async getContract(): Promise<any> {
+        if (!this.isInitialized) {
+            console.log('Waiting for contract to be initialized...');
+            // Espera hasta que isInitialized sea true
+            await this.waitForInitialization();
+        }
+        return this.network.getContract(this.chaincodeName);
+    }
+
+    private waitForInitialization(): Promise<void> {
+        return new Promise((resolve) => {
+            const interval = setInterval(() => {
+                if (this.isInitialized) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100); // Revisa cada 100ms
+        });
     }
 }
