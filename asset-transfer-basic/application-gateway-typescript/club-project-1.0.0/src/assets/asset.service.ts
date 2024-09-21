@@ -4,8 +4,6 @@ import { AssetEntity } from './asset.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import { BusinessError, BusinessLogicException } from '../shared/errors/business-errors';
 import { AppService } from '../app.service';
-import { Contract } from '@hyperledger/fabric-gateway';
-import { AppModule } from '../app.module';
 
 @Injectable()
 export class AssetService {
@@ -47,6 +45,7 @@ export class AssetService {
         // Decode the results to JSON
         const resultJson = this.utf8Decoder.decode(resultBytes);
         const assetsArray = JSON.parse(resultJson);
+        console.log('*** Result:', assetsArray);
 
         // Map to AssetEntity
         const assetEntities: AssetEntity[] = assetsArray.map((asset: any) => {
@@ -63,12 +62,4 @@ export class AssetService {
         return assetEntities;
     }
 
-    private async initLedgerTx() {
-        // make sure contract is initialized
-        if (!this.contract) {
-            throw new BusinessLogicException('Contract is invalid', BusinessError.BAD_REQUEST);
-        }
-        return await this.contract.submitTransaction('InitLedger');
     }
-
-}
