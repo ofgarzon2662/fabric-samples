@@ -4,6 +4,7 @@ import { AssetEntity } from './asset.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import { BusinessError, BusinessLogicException } from '../shared/errors/business-errors';
 import { AppService } from '../app.service';
+import { Contract } from '@hyperledger/fabric-gateway';
 import { AppModule } from '../app.module';
 
 @Injectable()
@@ -15,27 +16,30 @@ export class AssetService {
     constructor(
         @InjectRepository(AssetEntity)
         private readonly assetEntity: Repository<AssetEntity>,
-        private readonly appService: AppService,
+        private appService: AppService,
         ) {
         this.utf8Decoder = new TextDecoder();
+
     }
 
     // Import contract
 
     //Init Ledger
     async initLedger(): Promise<void> {
-        this.contract = this.appService.getContract();
+
+        this.contract =  await this.appService.getContract();
+
         // make sure contract is initialized
         if (!this.contract) {
             throw new BusinessLogicException('Contract is invalid', BusinessError.BAD_REQUEST);
         }
-        return await this.contract.submitTransaction('InitLedger');
+        this.contract.submitTransaction('InitLedger');
     }
 
     // Get All Assets
     async getAllAssets(): Promise<AssetEntity[]> {
 
-        this.contract = this.appService.getContract();
+        this.contract = await this.appService.getContract();
 
         // Evaluate tx
         const resultBytes = await this.contract.evaluateTransaction('GetAllAssets');
@@ -57,6 +61,14 @@ export class AssetService {
         });
 
         return assetEntities;
+    }
+
+    private async initLedgerTx() {
+        // make sure contract is initialized
+        if (!this.contract) {
+            throw new BusinessLogicException('Contract is invalid', BusinessError.BAD_REQUEST);
+        }
+        return await this.contract.submitTransaction('InitLedger');
     }
 
 }

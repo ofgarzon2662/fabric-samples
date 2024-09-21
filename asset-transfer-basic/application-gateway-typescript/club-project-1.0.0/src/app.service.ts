@@ -5,10 +5,11 @@
  */
 const grpc = require('@grpc/grpc-js');
 const { connect, signers } = require('@hyperledger/fabric-gateway');
+import { Contract } from '@hyperledger/fabric-gateway';
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const path = require('node:path');
-const { TextDecoder } = require('node:util');
+import { TextDecoder } from 'util';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
 @Injectable()
@@ -28,10 +29,10 @@ export class AppService implements OnModuleInit {
     private  tlsCertPath: string;
     private  peerEndpoint: string;
     private  peerHostAlias: string;
-    private  utf8Decoder: TextDecoder;
+    private utf8Decoder = new TextDecoder();
     private gateway;
     private network; // Almacenará la instancia de network
-    private contract; // Almacenará la instancia de contract
+    private contract: Contract; // Almacenará la instancia de contract
 
     private loadEnvironmentVariables(): void {
         this.channelName = this.envOrDefault('CHANNEL_NAME', 'mychannel');
@@ -132,23 +133,29 @@ export class AppService implements OnModuleInit {
         console.log('Contract initialized FIRST', this.network.getContract(this.chaincodeName));
         this.isInitialized = true;
         console.log('Gateway connection successful');
+        console.log('Contract methods:', Object.keys(this.contract));
+        this.contract.submitTransaction('InitLedger');
 
+        const resultBytes = await this.contract.evaluateTransaction('GetAllAssets');
+        const resultJson = this.utf8Decoder.decode(resultBytes);
+        const result: unknown = JSON.parse(resultJson);
+        console.log('*** Result:', result);
         }
 
 
-    // async onModuleDestroy(): Promise<void> {
-    //     if (this.gateway) {
-    //         this.gateway.close();
-    //         console.log('Gateway connection closed');
-    //     }
-    // }
+    async onModuleDestroy(): Promise<void> {
+        if (this.gateway) {
+            this.gateway.close();
+            console.log('Gateway connection closed');
+        }
+    }
 
     // Métodos públicos para acceder a las instancias de network y contract
     public async getNetwork(): Promise<any> {
         return this.network;
     }
 
-    public async getContract(): Promise<any> {
+    public async getContract(): Promise<Contract> {
         if (!this.isInitialized) {
             console.log('Waiting for contract to be initialized...');
             // Espera hasta que isInitialized sea true
@@ -157,7 +164,7 @@ export class AppService implements OnModuleInit {
 
         console.log('Contract initialized', this.contract);
         console.log('Returning contract instance');
-        return this.network.getContract(this.chaincodeName);
+        return this.contract
     }
 
     private waitForInitialization(): Promise<void> {
