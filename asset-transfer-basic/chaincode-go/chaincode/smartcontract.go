@@ -24,8 +24,8 @@ type Artifact struct {
 }
 
 // CreateAsset issues a new asset to the world state with given details.
-func (s *SmartContract) CreateArtifact(ctx contractapi.TransactionContextInterface, id string, name string, description string, owner string, appraisedValue int) error {
-	exists, err := s.AssetExists(ctx, id)
+func (s *SmartContract) CreateArtifact(ctx contractapi.TransactionContextInterface, id string, name string, description string, body map[string]interface{}) error {
+	exists, err := s.ArtifactExists(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -33,12 +33,11 @@ func (s *SmartContract) CreateArtifact(ctx contractapi.TransactionContextInterfa
 		return fmt.Errorf("the asset %s already exists", id)
 	}
 
-	asset := Asset{
-		ID:             id,
-		Color:          color,
-		Size:           size,
-		Owner:          owner,
-		AppraisedValue: appraisedValue,
+	asset := Artifact{
+		ID:          id,
+		Name:        name,
+		Description: description,
+		Body:        body,
 	}
 	assetJSON, err := json.Marshal(asset)
 	if err != nil {
@@ -49,7 +48,7 @@ func (s *SmartContract) CreateArtifact(ctx contractapi.TransactionContextInterfa
 }
 
 // AssetExists returns true when asset with given ID exists in world state
-func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
+func (s *SmartContract) ArtifactExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
 	assetJSON, err := ctx.GetStub().GetState(id)
 	if err != nil {
 		return false, fmt.Errorf("failed to read from world state: %v", err)
@@ -59,7 +58,7 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 }
 
 // GetAllAssets returns all assets found in world state
-func (s *SmartContract) GetAllAssets(ctx contractapi.TransactionContextInterface) ([]*Asset, error) {
+func (s *SmartContract) GetAllArtifacts(ctx contractapi.TransactionContextInterface) ([]*Artifact, error) {
 	// range query with empty string for startKey and endKey does an
 	// open-ended query of all assets in the chaincode namespace.
 	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
@@ -68,14 +67,14 @@ func (s *SmartContract) GetAllAssets(ctx contractapi.TransactionContextInterface
 	}
 	defer resultsIterator.Close()
 
-	var assets []*Asset
+	var assets []*Artifact
 	for resultsIterator.HasNext() {
 		queryResponse, err := resultsIterator.Next()
 		if err != nil {
 			return nil, err
 		}
 
-		var asset Asset
+		var asset Artifact
 		err = json.Unmarshal(queryResponse.Value, &asset)
 		if err != nil {
 			return nil, err

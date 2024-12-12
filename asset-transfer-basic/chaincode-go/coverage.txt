@@ -1,0 +1,5 @@
+mode: set
+github.com/hyperledger/fabric-samples/asset-transfer-basic/chaincode-go/assetTransfer.go:14.13,16.16 2 0
+github.com/hyperledger/fabric-samples/asset-transfer-basic/chaincode-go/assetTransfer.go:16.16,18.3 1 0
+github.com/hyperledger/fabric-samples/asset-transfer-basic/chaincode-go/assetTransfer.go:20.2,20.47 1 0
+github.com/hyperledger/fabric-samples/asset-transfer-basic/chaincode-go/assetTransfer.go:20.47,22.3 1 0
